@@ -2,12 +2,17 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
+const dotenv = require('dotenv')
 app.use(express.json())
 morgan.token('object', req => JSON.stringify(req.body))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :object'))
 app.use(cors())
+dotenv.config()
 app.use(express.static('build'))
-//
+
+
+const pw = process.env.PW
+console.log(pw)
 
 let phonebook = [
     {
