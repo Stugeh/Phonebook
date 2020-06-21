@@ -6,7 +6,7 @@ app.use(express.json())
 morgan.token('object', req => JSON.stringify(req.body))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :object'))
 app.use(cors())
-
+app.use(express.static('build'))
 
 let phonebook = [
     {
