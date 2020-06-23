@@ -1,6 +1,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const mongoose = require('mongoose')
 const app = express()
 app.use(express.json())
 morgan.token('object', req => JSON.stringify(req.body))
@@ -8,6 +9,11 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :o
 app.use(cors())
 app.use(express.static('build'))
 
+// initializing connection with mongoDb.
+const personSchema = new mongoose.Schema({ "name": String, "number": String })
+const Person = mongoose.model('Person', personSchema)
+const url = `mongodb+srv://Stugeh:${password}@cluster0-cj4cb.mongodb.net/Phonebook?retryWrites=true&w=majority`
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
 
 let phonebook = [
     {
@@ -32,18 +38,22 @@ let phonebook = [
     }
 ]
 
+// Root of the app. Prints the path of the phonebook itself.
 app.get('/', (req, res) => {
-    res.send('http://localhost:3001/api/persons')
+    res.send('/api/persons')
 })
 
+// Prints some info about the phonebook.
 app.get('/info', (req, res) => {
     res.send(`The Phonebook has ${phonebook.length} entries.<br/>${new Date}`)
 })
 
+// Phonebook itself.
 app.get('/api/persons', (req, res) => {
     res.json(phonebook)
 })
 
+// individual person.
 app.get('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id)
     const person = phonebook.find(person => person.id === id)
@@ -54,7 +64,7 @@ app.get('/api/persons/:id', (req, res) => {
     }
 })
 
-
+// add person.
 app.post('/api/persons', (req, res) => {
     const body = req.body
     const containsName = phonebook
@@ -81,13 +91,14 @@ app.post('/api/persons', (req, res) => {
     res.json(person)
 })
 
-
+// delete person.
 app.delete('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id)
     phonebook = phonebook.filter(note => note.id !== id)
     res.status(204).end()
 })
 
+// run the server.
 const PORT = process.env.PORT || 3001
 app.listen(PORT)
 console.log(`server running on port ${PORT}`)

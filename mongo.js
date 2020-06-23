@@ -7,6 +7,13 @@ const Person = mongoose.model('Person', personSchema)
 const url = `mongodb+srv://Stugeh:${password}@cluster0-cj4cb.mongodb.net/Phonebook?retryWrites=true&w=majority`
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
 
+//you need to create a .env file with your own databases password.
+//if (!process.env.PW) {
+//    console.log('please set up a .env file with a password')
+//    process.exit(1)
+//}
+//const password = process.env.PW
+
 if (process.argv[3] && process.argv[4]) {
     const name = process.argv[3]
     const number = process.argv[4]
@@ -30,12 +37,7 @@ if (process.argv[3] && process.argv[4]) {
     })
 }
 
-//you need to create a .env file with your own databases password.
-//if (!process.env.PW) {
-//    console.log('please set up a .env file with a password')
-//    process.exit(1)
-//}
-//const password = process.env.PW
+
 
 
 
