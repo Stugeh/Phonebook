@@ -1,22 +1,13 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
-const mongoose = require('mongoose')
-const dotenv = require('dotenv')
-dotenv.config()
 const app = express()
 app.use(express.json())
 morgan.token('object', req => JSON.stringify(req.body))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :object'))
 app.use(cors())
 app.use(express.static('build'))
-
-// initializing connection with MongoDb.
-const url = process.env.MONGO_URL
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
-const personSchema = new mongoose.Schema({ "name": String, "number": String })
-const Person = mongoose.model('Person', personSchema)
-
+const Person = require('./models/person')
 
 // let phonebook = [
 //     {
@@ -62,21 +53,22 @@ app.get('/api/persons', (req, res) => {
 })
 
 // individual person.
-app.get('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
-    const person = phonebook.find(person => person.id === id)
-    if (person) {
-        res.json(person)
-    } else {
-        res.status(404).end()
-    }
+app.get('/api/persons/:_id', (req, res) => {
+    Person.findById(req.params._id).then(person => {
+        console.log('person :>> ', person)
+        if (person) {
+            res.json(person.toJSON)
+        } else {
+            res.status(404).end()
+        }
+    })
 })
 
 // add person.
 app.post('/api/persons', (req, res) => {
     const body = req.body
-    const containsName = phonebook
-        .find(person => person.name === body.name)
+    //const containsName = phonebook
+    //    .find(person => person.name === body.name)
 
     if (!body.name || !body.number) {
         return res.status(400).json({
@@ -84,19 +76,22 @@ app.post('/api/persons', (req, res) => {
         })
     }
 
-    if (containsName) {
-        return res.status(400).json({
-            error: `${body.name} is already in the phonebook`
-        })
-    }
+    //if (containsName) {
+    //    return res.status(400).json({
+    //        error: `${body.name} is already in the phonebook`
+    //    })
+    //}
 
-    const person = {
+    const person = new Person({
         name: body.name,
         number: body.number,
         id: Math.floor(Math.random() * 1000000000)
-    }
-    phonebook = phonebook.concat(person)
-    res.json(person)
+    })
+    person.save().then(result => {
+        console.log(`added ${result.name} number ${result.number} to the phonebook`)
+        res.json(person.toJSON)
+
+    })
 })
 
 // delete person.
@@ -105,6 +100,8 @@ app.delete('/api/persons/:id', (req, res) => {
     phonebook = phonebook.filter(note => note.id !== id)
     res.status(204).end()
 })
+
+
 
 // run the server.
 const PORT = process.env.PORT || 3001
