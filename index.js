@@ -2,6 +2,8 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const mongoose = require('mongoose')
+const dotenv = require('dotenv')
+dotenv.config()
 const app = express()
 app.use(express.json())
 morgan.token('object', req => JSON.stringify(req.body))
@@ -9,34 +11,35 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :o
 app.use(cors())
 app.use(express.static('build'))
 
-// initializing connection with mongoDb.
+// initializing connection with MongoDb.
+const url = process.env.MONGO_URL
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
 const personSchema = new mongoose.Schema({ "name": String, "number": String })
 const Person = mongoose.model('Person', personSchema)
-const url = `mongodb+srv://Stugeh:${password}@cluster0-cj4cb.mongodb.net/Phonebook?retryWrites=true&w=majority`
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
 
-let phonebook = [
-    {
-        "name": "Arto Hellas",
-        "number": "39-44-5323522",
-        "id": 1
-    },
-    {
-        "name": "Ada Lovelace",
-        "number": "39-44-5323523",
-        "id": 2
-    },
-    {
-        "name": "Dan Abramov",
-        "number": "12-43-234345",
-        "id": 3
-    },
-    {
-        "name": "Mary Poppendieck",
-        "number": "39-23-6423122",
-        "id": 4
-    }
-]
+
+// let phonebook = [
+//     {
+//         "name": "Arto Hellas",
+//         "number": "39-44-5323522",
+//         "id": 1
+//     },
+//     {
+//         "name": "Ada Lovelace",
+//         "number": "39-44-5323523",
+//         "id": 2
+//     },
+//     {
+//         "name": "Dan Abramov",
+//         "number": "12-43-234345",
+//         "id": 3
+//     },
+//     {
+//         "name": "Mary Poppendieck",
+//         "number": "39-23-6423122",
+//         "id": 4
+//     }
+// ]
 
 // Root of the app. Prints the path of the phonebook itself.
 app.get('/', (req, res) => {
@@ -45,12 +48,17 @@ app.get('/', (req, res) => {
 
 // Prints some info about the phonebook.
 app.get('/info', (req, res) => {
-    res.send(`The Phonebook has ${phonebook.length} entries.<br/>${new Date}`)
+    Person.find({}).then(phonebook =>
+        res.send(`The Phonebook has ${phonebook.length} entries.<br/>${new Date}`)
+    )
 })
 
 // Phonebook itself.
 app.get('/api/persons', (req, res) => {
-    res.json(phonebook)
+    Person.find({}).then(phonebook => {
+        res.json(phonebook)
+    })
+
 })
 
 // individual person.
