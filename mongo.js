@@ -1,3 +1,5 @@
+/****************THIS FILE DOESN'T DO ANYTHING IT WAS FOR TESTING PURPOSES****************************/
+
 //const dotenv = require('dotenv')
 //dotenv.config()
 const mongoose = require('mongoose')
