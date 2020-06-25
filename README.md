@@ -1,5 +1,5 @@
 # Phonebook
-This is an assignment for FullStackOpen2020. The app uses mongodb to store a collection of peoples phonenumbers and names. the database can be updated, added to and deleted from via the front end that's written with react and uses a node server to communicate between the frontend and database. The app is deployed at heroku at: https://radiant-brook-36578.herokuapp.com/
+This is an assignment for FullStackOpen2020. The app uses mongodb to store a collection of peoples phonenumbers and names. the database can be updated, added to and deleted from via the front end that's written with react and uses a node server to communicate between the frontend and database. The app is deployed with heroku at: https://radiant-brook-36578.herokuapp.com/
 
 
 Course info: https://fullstackopen.com/en/about
